@@ -15,6 +15,7 @@ import org.mm.parser.node.MMExpressionNode;
 import org.mm.renderer.owlapi.OWLRenderer;
 import org.mm.rendering.Rendering;
 import org.mm.ss.SpreadSheetDataSource;
+import org.mm.ss.SpreadsheetLocation;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
@@ -43,7 +44,7 @@ public class MMExample
 
       // Create a Mapping Master expression
       TransformationRule mmExpression = new TransformationRule("MySheet", "A", "A", "1",
-        "3", "Creating car instances", "Individual: @A** Types: Car");
+        "3", "Creating car instances", "Individual: @A* Types: Car");
 
       // Create a Mapping Master parser for the expression
       MappingMasterParser parser = new MappingMasterParser(
@@ -52,6 +53,7 @@ public class MMExample
       // Create a Mapping Master renderer with the context of an OWL ontology and a spreadsheet
       OWLOntologySource ontologySource = new OWLAPIOntology(ontology);
       SpreadSheetDataSource dataSource = new SpreadSheetDataSource(workbook);
+      dataSource.setCurrentLocation(new SpreadsheetLocation("MySheet", 1, 1));
       OWLRenderer renderer = new OWLRenderer(ontologySource, dataSource);
 
       // Render the expression
@@ -60,7 +62,7 @@ public class MMExample
 
       // Display the rendering
       if (renderingResult.isPresent())
-        renderingResult.toString();
+        System.out.println(renderingResult.toString());
 
     } catch (OWLOntologyCreationException | RuntimeException | ParseException | InvalidFormatException | IOException e) {
       System.err.println("Exception: " + e.getMessage());
