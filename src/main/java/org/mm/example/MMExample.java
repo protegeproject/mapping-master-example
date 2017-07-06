@@ -13,7 +13,7 @@ import org.mm.parser.ParseException;
 import org.mm.parser.node.ExpressionNode;
 import org.mm.parser.node.MMExpressionNode;
 import org.mm.renderer.owlapi.OWLRenderer;
-import org.mm.rendering.Rendering;
+import org.mm.rendering.owlapi.OWLRendering;
 import org.mm.ss.SpreadSheetDataSource;
 import org.mm.ss.SpreadsheetLocation;
 import org.semanticweb.owlapi.apibinding.OWLManager;
@@ -32,7 +32,6 @@ public class MMExample
 {
   public static void main(String[] args)
   {
-
     try {
       File owlFile = new File(MMExample.class.getClassLoader().getResource("ExampleOWLOntology.owl").getFile());
       File spreadsheetFile = new File(
@@ -52,27 +51,31 @@ public class MMExample
         columnNumber2Name(finishColumnNumber), startRowNumber.toString(), finishRowNumber.toString(),
         "Creating car instances", "Individual: @A* Types: Car");
 
-      // Create a Mapping Master parser for the expression
+      // Create a Mapping Master parser for the expression, parse it, and return an AST node representing the expression
       MappingMasterParser parser = new MappingMasterParser(
         new ByteArrayInputStream(mmExpression.getRuleString().getBytes()), new ReferenceSettings(), -1);
-      MMExpressionNode mmExpresionNode = new ExpressionNode((ASTExpression)parser.expression())
+      MMExpressionNode mmExpressionNode = new ExpressionNode((ASTExpression)parser.expression())
         .getMMExpressionNode();
 
-      // Create a Mapping Master renderer with the context of an OWL ontology and a spreadsheet
+      // Create an ontology source and a data source (which wrap an OWLAPI OWL ontology and a POI workbook, respectively)
       OWLOntologySource ontologySource = new OWLAPIOntology(ontology);
       SpreadSheetDataSource dataSource = new SpreadSheetDataSource(workbook);
-      OWLRenderer renderer = new OWLRenderer(ontologySource, dataSource);
 
+      // Create an OWL renderer. An OWL renderer renders a set of OWLAPI-based OWL axioms.
+      OWLRenderer owlRenderer = new OWLRenderer(ontologySource, dataSource);
+
+      // Loop through the cells specified by the transformation rule
       for (int columnNumber = startColumnNumber; columnNumber <= finishColumnNumber; columnNumber++) {
         for (int rowNumber = startRowNumber; rowNumber <= finishRowNumber; rowNumber++) {
+          // A Mapping Master expression is rendered in the context of a location in a spreadsheet
           dataSource.setCurrentLocation(new SpreadsheetLocation(sheetName, columnNumber, rowNumber));
 
-          // Render the expression for the current location
-          Optional<? extends Rendering> renderingResult = renderer.render(mmExpresionNode);
+          // Render the Mapping Master expression as an OWL rendering (which will contain a set of OWLAPI-based OWL axioms)
+          Optional<OWLRendering> owlRendering = owlRenderer.render(mmExpressionNode);
 
-          // Display the rendering
-          if (renderingResult.isPresent())
-            System.out.println(renderingResult.toString());
+          // Display the OWL axioms rendered by the Mapping Master expression
+          if (owlRendering.isPresent())
+            System.out.println("Rendered OWL axioms: " + owlRendering.get().getOWLAxioms());
         }
       }
     } catch (OWLOntologyCreationException | RuntimeException | ParseException | InvalidFormatException | IOException e) {
