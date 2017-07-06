@@ -44,7 +44,11 @@ public class MMExample
       // Create a workbook using POI
       Workbook workbook = WorkbookFactory.create(spreadsheetFile);
 
-      // Create a Mapping Master expression
+      // Create an ontology source and a spreadsheet source (which wrap an OWLAPI OWL ontology and a POI workbook, respectively)
+      OWLOntologySource ontologySource = new OWLAPIOntology(ontology);
+      SpreadSheetDataSource spreadsheetSource = new SpreadSheetDataSource(workbook);
+
+      // Create a Mapping Master expression. A Mapping Master expression is rendered over a range of cells in a sheet.
       final String sheetName = "MySheet";
       final Integer startColumnNumber = 1, finishColumnNumber = 1, startRowNumber = 1, finishRowNumber = 3;
       TransformationRule mmExpression = new TransformationRule(sheetName, columnNumber2Name(startColumnNumber),
@@ -57,18 +61,14 @@ public class MMExample
       MMExpressionNode mmExpressionNode = new ExpressionNode((ASTExpression)parser.expression())
         .getMMExpressionNode();
 
-      // Create an ontology source and a data source (which wrap an OWLAPI OWL ontology and a POI workbook, respectively)
-      OWLOntologySource ontologySource = new OWLAPIOntology(ontology);
-      SpreadSheetDataSource dataSource = new SpreadSheetDataSource(workbook);
-
-      // Create an OWL renderer. An OWL renderer renders a set of OWLAPI-based OWL axioms.
-      OWLRenderer owlRenderer = new OWLRenderer(ontologySource, dataSource);
+      // Create an OWL renderer and supply it with an ontology and a spreadsheet. An OWL renderer renders a set of OWLAPI-based OWL axioms.
+      OWLRenderer owlRenderer = new OWLRenderer(ontologySource, spreadsheetSource);
 
       // Loop through the cells specified by the transformation rule
       for (int columnNumber = startColumnNumber; columnNumber <= finishColumnNumber; columnNumber++) {
         for (int rowNumber = startRowNumber; rowNumber <= finishRowNumber; rowNumber++) {
           // A Mapping Master expression is rendered in the context of a location in a spreadsheet
-          dataSource.setCurrentLocation(new SpreadsheetLocation(sheetName, columnNumber, rowNumber));
+          spreadsheetSource.setCurrentLocation(new SpreadsheetLocation(sheetName, columnNumber, rowNumber));
 
           // Render the Mapping Master expression as an OWL rendering (which will contain a set of OWLAPI-based OWL axioms)
           Optional<OWLRendering> owlRendering = owlRenderer.render(mmExpressionNode);
