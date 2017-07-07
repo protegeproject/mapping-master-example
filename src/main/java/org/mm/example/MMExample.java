@@ -58,13 +58,12 @@ public class MMExample
       // Create a Mapping Master parser for the expression, parse it, and return an AST node representing the expression
       MappingMasterParser parser = new MappingMasterParser(
         new ByteArrayInputStream(mmExpression.getRuleString().getBytes()), new ReferenceSettings(), -1);
-      MMExpressionNode mmExpressionNode = new ExpressionNode((ASTExpression)parser.expression())
-        .getMMExpressionNode();
+      MMExpressionNode mmExpressionNode = new ExpressionNode((ASTExpression)parser.expression()).getMMExpressionNode();
 
       // Create an OWL renderer and supply it with an ontology and a spreadsheet. An OWL renderer renders a set of OWLAPI-based OWL axioms.
       OWLRenderer owlRenderer = new OWLRenderer(ontologySource, spreadsheetSource);
 
-      // Loop through the cells specified by the transformation rule
+      // Loop through the cells specified by the Mapping Master expression
       for (int columnNumber = startColumnNumber; columnNumber <= finishColumnNumber; columnNumber++) {
         for (int rowNumber = startRowNumber; rowNumber <= finishRowNumber; rowNumber++) {
           // A Mapping Master expression is rendered in the context of a location in a spreadsheet
