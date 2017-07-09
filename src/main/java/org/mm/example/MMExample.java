@@ -33,6 +33,7 @@ public class MMExample
   public static void main(String[] args)
   {
     try {
+      // Load an example OWL ontology and Excel spreadsheet from the resources directory
       File owlFile = new File(MMExample.class.getClassLoader().getResource("ExampleOWLOntology.owl").getFile());
       File spreadsheetFile = new File(
         MMExample.class.getClassLoader().getResource("ExampleSpreadsheet.xlsx").getFile());
@@ -60,7 +61,8 @@ public class MMExample
         new ByteArrayInputStream(mmExpression.getRuleString().getBytes()), new ReferenceSettings(), -1);
       MMExpressionNode mmExpressionNode = new ExpressionNode((ASTExpression)parser.expression()).getMMExpressionNode();
 
-      // Create an OWL renderer and supply it with an ontology and a spreadsheet. An OWL renderer renders a set of OWLAPI-based OWL axioms.
+      // Create an OWL renderer and supply it with an ontology and a spreadsheet. 
+      // An OWL renderer renders a set of OWLAPI-based OWL axioms from a Mapping Master expression.
       OWLRenderer owlRenderer = new OWLRenderer(ontologySource, spreadsheetSource);
 
       // Loop through the cells specified by the Mapping Master expression
