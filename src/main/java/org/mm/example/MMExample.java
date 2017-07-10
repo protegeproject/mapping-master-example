@@ -17,6 +17,7 @@ import org.mm.rendering.owlapi.OWLRendering;
 import org.mm.ss.SpreadSheetDataSource;
 import org.mm.ss.SpreadsheetLocation;
 import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
@@ -25,6 +26,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.mm.ss.SpreadSheetUtil.columnNumber2Name;
 
@@ -74,9 +76,12 @@ public class MMExample
           // Render the Mapping Master expression as an OWL rendering (which will contain a set of OWLAPI-based OWL axioms)
           Optional<OWLRendering> owlRendering = owlRenderer.render(mmExpressionNode);
 
-          // Display the OWL axioms rendered by the Mapping Master expression
-          if (owlRendering.isPresent())
-            System.out.println("Rendered OWL axioms: " + owlRendering.get().getOWLAxioms());
+          // Display the OWL axioms rendered by the Mapping Master expression and add them to the source ontology
+          if (owlRendering.isPresent()) {
+            Set<OWLAxiom> renderedOWLAxioms = owlRendering.get().getOWLAxioms();
+            System.out.println("Rendered OWL axioms: " + renderedOWLAxioms);
+            ontologyManager.addAxioms(ontology, renderedOWLAxioms);
+          }
         }
       }
     } catch (OWLOntologyCreationException | RuntimeException | ParseException | InvalidFormatException | IOException e) {
