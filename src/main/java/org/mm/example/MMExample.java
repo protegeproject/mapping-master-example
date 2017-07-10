@@ -52,11 +52,12 @@ public class MMExample
       SpreadSheetDataSource spreadsheetSource = new SpreadSheetDataSource(workbook);
 
       // Create a Mapping Master expression. A Mapping Master expression is rendered over a range of cells in a sheet.
+      // Here we create individuals from cell range A1:A3 in a spreadsheet typed by the class Car defined in the source ontology.
       final String sheetName = "MySheet";
       final Integer startColumnNumber = 1, finishColumnNumber = 1, startRowNumber = 1, finishRowNumber = 3;
       TransformationRule mmExpression = new TransformationRule(sheetName, columnNumber2Name(startColumnNumber),
         columnNumber2Name(finishColumnNumber), startRowNumber.toString(), finishRowNumber.toString(),
-        "Creating car instances", "Individual: @A* Types: Car");
+        "Create car instances from column A", "Individual: @A* Types: Car");
 
       // Create a Mapping Master parser for the expression, parse it, and return an AST node representing the expression
       MappingMasterParser parser = new MappingMasterParser(
