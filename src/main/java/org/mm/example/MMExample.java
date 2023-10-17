@@ -85,7 +85,7 @@ public class MMExample
           }
         }
       }
-    } catch (OWLOntologyCreationException | RuntimeException | ParseException | InvalidFormatException | IOException e) {
+    } catch (OWLOntologyCreationException | RuntimeException | ParseException | IOException e) {
       System.err.println("Exception: " + e.getMessage());
       e.printStackTrace();
       System.exit(-1);
